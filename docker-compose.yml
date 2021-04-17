@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:
+  dbrecipe:
+    image: mysql:8
+    env_file:
+      - recipe/.env
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+    networks:
+      - traefik
+
+  phpmyadmin:
+    depends_on:
+      - dbrecipe
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    expose:
+      - "8080"
+    environment:
+      PMA_HOST: dbrecipe
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: root
+
+  recipe:
+    build: php
+    ports:
+      - "8000:80"
+    expose:
+      - "8000"
+    volumes:
+      - ./php/vhosts:/etc/apache2/sites-enabled
+      - ./:/var/www
+    restart: always
+    depends_on:
+      - dbrecipe
+    networks:
+      - traefik
+
+volumes:
+  db-data:
+
+networks:
+  traefik:
+    driver: bridge
