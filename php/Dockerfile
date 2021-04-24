@@ -40,7 +40,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer \
 RUN chmod +x /usr/local/bin/composer
 RUN adduser www-data root
-RUN chown www-data:www-data public -R
 
 # Install symfony cli
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
