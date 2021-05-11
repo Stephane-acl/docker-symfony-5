@@ -48,4 +48,7 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash \
 RUN a2enmod rewrite
 RUN pwd
 
+RUN #!/bin/bash source /api/.env.local
+RUN export $(cut -d= -f1 .env.local)
+
 WORKDIR /var/www/
